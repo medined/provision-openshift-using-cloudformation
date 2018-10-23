@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# A namespace has been added to the environment variables so they
+# are listed together when sorted. It also reduced the likelihood
+# of name collision with other utility.
+
+###########
+# WARNING!
+###########
+# Please do not use a dollar sign in the password variable. This
+# project uses shell commands and they are not properly escaped
+# so the dollar sign will break the process!
+
+Z34_AMI="ami-9887c6e7"
+Z34_AVAILABILITY_ZONE="us-east-1a"
+Z34_HTPASSWD_PASSWORD=ZipBlipGlipGlop345
+Z34_HTPASSWD_USERNAME=admin
+Z34_INSTANCE_TYPE="t3.medium"
+Z34_KEYNAME="xxxyyy"
+Z34_PEM_FILE=/.../xxxyyy.pem
+Z34_PUBLIC_SUBNET="subnet-0176f2b8176cf9999"
+Z34_REGION_NAME="us-east-1"
+Z34_VPC="vpc-0b716fe8f45f99999"
+Z34_VPC_CIDR_BLOCK="10.5.0.0/16"

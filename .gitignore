@@ -1,0 +1,4 @@
+inventory
+source-me.sh
+openshift-ansible/
+prepare.retry

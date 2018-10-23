@@ -1,0 +1,190 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Metadata: {}
+
+##########
+# There are no default parameters. They all must
+# be supplied when the template is invoked.
+Parameters:
+  pAMI:
+    Description: The AMI for the EC2 instances
+    Type: AWS::EC2::Image::Id
+  pAvailabilityZone:
+    Description: Availability zone to deploy
+    Type: AWS::EC2::AvailabilityZone::Name
+  pInstanceType:
+    Description: Instance type of master and worker nodes
+    Type: String
+  pKeyName:
+    Description: The EC2 Key Pair to allow SSH access to the instance
+    Type: AWS::EC2::KeyPair::KeyName
+  pSubnet:
+    Description: The Subnet to hold the EC2 instance.
+    Type: AWS::EC2::Subnet::Id
+  pVPC:
+    Description: The VPC to hold all resources
+    Type: AWS::EC2::VPC::Id
+  pVpcCidrBlock:
+    Description: The CIDR of the VPC that can connect to OpenShift
+    Type: String
+
+Resources:
+  rMasterSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref pVPC
+      GroupDescription: Security group for the master node
+      SecurityGroupIngress:
+      - IpProtocol: -1
+        FromPort: -1
+        ToPort: -1
+        CidrIp: !Ref pVpcCidrBlock
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 8443
+        ToPort: 8443
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 10250
+        ToPort: 10250
+        CidrIp: 0.0.0.0/0
+  rWorkerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref pVPC
+      GroupDescription: Security group for the worker nodes
+      SecurityGroupIngress:
+      - IpProtocol: -1
+        FromPort: -1
+        ToPort: -1
+        CidrIp: !Ref pVpcCidrBlock
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+  rMaster:
+    Type: AWS::EC2::Instance
+    Properties:
+      Tags:
+      - Key: Name
+        Value: openshift-master
+      InstanceType: !Ref pInstanceType
+      KeyName: !Ref pKeyName
+      AvailabilityZone: !Ref pAvailabilityZone
+      NetworkInterfaces:
+      - AssociatePublicIpAddress: true
+        DeviceIndex: 0
+        SubnetId: !Ref pSubnet
+        GroupSet:
+        - !Ref rMasterSecurityGroup
+      ImageId: !Ref pAMI
+  rWorker1:
+    Type: AWS::EC2::Instance
+    Properties:
+      Tags:
+      - Key: Name
+        Value: openshift-worker1
+      InstanceType: !Ref pInstanceType
+      KeyName: !Ref pKeyName
+      AvailabilityZone: !Ref pAvailabilityZone
+      NetworkInterfaces:
+      - AssociatePublicIpAddress: true
+        DeviceIndex: 0
+        SubnetId: !Ref pSubnet
+        GroupSet:
+        - !Ref rWorkerSecurityGroup
+      ImageId: !Ref pAMI
+  rWorker2:
+    Type: AWS::EC2::Instance
+    Properties:
+      Tags:
+      - Key: Name
+        Value: openshift-worker2
+      InstanceType: !Ref pInstanceType
+      KeyName: !Ref pKeyName
+      AvailabilityZone: !Ref pAvailabilityZone
+      NetworkInterfaces:
+      - AssociatePublicIpAddress: true
+        DeviceIndex: 0
+        SubnetId: !Ref pSubnet
+        GroupSet:
+        - !Ref rWorkerSecurityGroup
+      ImageId: !Ref pAMI
+  rMasterVolume:
+    Type: AWS::EC2::Volume
+    Properties:
+      Tags:
+      - Key: Name
+        Value: openshift-master
+      AvailabilityZone: !GetAtt rMaster.AvailabilityZone
+      Size: 50
+    DeletionPolicy: Delete
+  rMasterVolumeAttachment:
+    Type: AWS::EC2::VolumeAttachment
+    Properties:
+      Device: /dev/xvdb
+      VolumeId: !Ref rMasterVolume
+      InstanceId: !Ref rMaster
+  rWorker1Volume:
+    Type: AWS::EC2::Volume
+    Properties:
+      Tags:
+      - Key: Name
+        Value: openshift-worker1
+      AvailabilityZone: !GetAtt rWorker1.AvailabilityZone
+      Size: 50
+    DeletionPolicy: Delete
+  rWorker1VolumeAttachment:
+    Type: AWS::EC2::VolumeAttachment
+    Properties:
+      Device: /dev/xvdb
+      VolumeId: !Ref rWorker1Volume
+      InstanceId: !Ref rWorker1
+  rWorker2Volume:
+    Type: AWS::EC2::Volume
+    Properties:
+      Tags:
+      - Key: Name
+        Value: openshift-worker2
+      AvailabilityZone: !GetAtt rWorker2.AvailabilityZone
+      Size: 50
+    DeletionPolicy: Delete
+  rWorker2VolumeAttachment:
+    Type: AWS::EC2::VolumeAttachment
+    Properties:
+      Device: '/dev/xvdb'
+      VolumeId: !Ref rWorker2Volume
+      InstanceId: !Ref rWorker2
+Outputs:
+  oMasterInstanceId:
+    Description: Instance Id
+    Value: !Ref rMaster
+    Export:
+      Name: !Join [ ":", [ !Ref "AWS::StackName", MasterInstanceId ] ]
+  oMasterPublicIP:
+    Description: Public IP Address
+    Value: !GetAtt rMaster.PublicIp
+    Export:
+      Name: !Join [ ":", [ !Ref "AWS::StackName", MasterPublicIp ] ]
+  oWorker1InstanceId:
+    Description: Instance Id
+    Value: !Ref rWorker1
+    Export:
+      Name: !Join [ ":", [ !Ref "AWS::StackName", Worker1InstanceId ] ]
+  oWorker1PublicIP:
+    Description: Public IP Address
+    Value: !GetAtt rWorker1.PublicIp
+    Export:
+      Name: !Join [ ":", [ !Ref "AWS::StackName", Worker1PublicIp ] ]
+  oWorker2InstanceId:
+    Description: Instance Id
+    Value: !Ref rWorker2
+    Export:
+      Name: !Join [ ":", [ !Ref "AWS::StackName", Worker2InstanceId ] ]
+  oWorker2PublicIP:
+    Description: Public IP Address
+    Value: !GetAtt rWorker2.PublicIp
+    Export:
+      Name: !Join [ ":", [ !Ref "AWS::StackName", Worker2PublicIp ] ]
