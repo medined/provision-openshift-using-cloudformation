@@ -22,11 +22,6 @@ select yn in "Yes" "No"; do
     esac
 done
 
-
-Z34_INVENTORY_FILE="inventory"
-Z34_STACK_NAME="openshift"
-Z34_TEMPLATE_FILE="openshift.yaml"
-
 source source-me.sh
 
 ##########
@@ -228,6 +223,22 @@ ssh \
   sudo htpasswd -b /etc/openshift/openshift-passwd $Z34_HTPASSWD_USERNAME $Z34_HTPASSWD_PASSWORD
 
 #############################
+echo "Saving OpenShift username and password to Parameter Store."
+#############################
+
+aws ssm put-parameter \
+  --name ${Z34_STACK_NAME}-username \
+  --value $Z34_HTPASSWD_USERNAME \
+  --type String \
+  --overwrite > /dev/null
+
+aws ssm put-parameter \
+  --name ${Z34_STACK_NAME}-password \
+  --value $Z34_HTPASSWD_PASSWORD \
+  --type String \
+  --overwrite > /dev/null
+
+#############################
 echo "Openshift: checking node status."
 #############################
 
@@ -235,4 +246,26 @@ ssh -i $Z34_PEM_FILE centos@$IP_MASTER oc get nodes
 
 #############################
 echo "Openshift: Web Console URL: https://$IP_MASTER:8443"
+echo ""
+echo "   The OC Binary"
+echo "   -------------"
+echo "   If you don't have the oc binary installed, download it from the"
+echo "   openshift console after you log into it."
+echo ""
+echo "For security reasons, the web console username and password will not"
+echo "be displayed. You can retreive them from the AWS Parameter Store with"
+echo "the following commands."
+echo ""
+echo "   Web Console User"
+echo "   -------------"
+echo "   aws ssm get-parameter --name $Z34_HTPASSWD_USERNAME --query 'Parameter.Value' --output text"
+echo ""
+echo "   Web Console Password"
+echo "   -------------"
+echo "   aws ssm get-parameter --name $Z34_HTPASSWD_PASSWORD --query 'Parameter.Value' --output text"
+echo ""
+echo "   OC Login"
+echo "   -------------"
+echo "   After you log into the web console, get your login command from"
+echo "   the menu on the top right."
 #############################
