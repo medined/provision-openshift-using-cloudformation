@@ -1,10 +1,24 @@
 # Provision Openshift Using CloudFormation
 
+This project creates an OpenShift cluster with one master and two nodes. It
+takes about 15 minutes to fully configure the three nodes. After the script
+runs, you can log into the web console. Simply follow information displayed
+at the end of the execution.
+
 ## Based On
 
 * https://sysdig.com/blog/deploy-openshift-aws/
 
 ## Prerequisites
+
+### AWS CLI
+
+I am using v1.14.44.
+
+### AWS Credentials
+
+I use the AWS_PROFILE variable and suggest that you do as well. In fact,
+the scripts will confirm its value before execution.
 
 ### Ansible
 
