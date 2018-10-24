@@ -28,6 +28,44 @@ Parameters:
     Type: String
 
 Resources:
+  rMasterRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+  rMasterInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+      - Ref: rMasterRole
+  rWorkerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service:
+            - ec2.amazonaws.com
+          Action:
+          - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+  rWorkerInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+      - Ref: rWorkerRole
   rMasterSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -79,6 +117,7 @@ Resources:
         SubnetId: !Ref pSubnet
         GroupSet:
         - !Ref rMasterSecurityGroup
+      IamInstanceProfile: !Ref rMasterInstanceProfile
       ImageId: !Ref pAMI
   rWorker1:
     Type: AWS::EC2::Instance
@@ -95,6 +134,7 @@ Resources:
         SubnetId: !Ref pSubnet
         GroupSet:
         - !Ref rWorkerSecurityGroup
+      IamInstanceProfile: !Ref rWorkerInstanceProfile
       ImageId: !Ref pAMI
   rWorker2:
     Type: AWS::EC2::Instance
@@ -111,6 +151,7 @@ Resources:
         SubnetId: !Ref pSubnet
         GroupSet:
         - !Ref rWorkerSecurityGroup
+      IamInstanceProfile: !Ref rWorkerInstanceProfile
       ImageId: !Ref pAMI
   rMasterVolume:
     Type: AWS::EC2::Volume

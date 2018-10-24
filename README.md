@@ -5,6 +5,10 @@ takes about 15 minutes to fully configure the three nodes. After the script
 runs, you can log into the web console. Simply follow information displayed
 at the end of the execution.
 
+# TODO
+
+* Make more restrictive IAM roles for master and nodes.
+
 ## Based On
 
 * https://sysdig.com/blog/deploy-openshift-aws/

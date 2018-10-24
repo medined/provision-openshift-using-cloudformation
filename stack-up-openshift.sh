@@ -149,12 +149,13 @@ ansible_ssh_user=centos
 ansible_sudo=true
 ansible_become=true
 deployment_type=origin
-os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
-openshift_install_examples=true
-openshift_docker_options='--selinux-enabled --insecure-registry 172.30.0.0/16'
-openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/openshift/openshift-passwd'}]
+openshift_cloudprovider_kind=aws
 openshift_disable_check=disk_availability,docker_storage,memory_availability
+openshift_docker_options='--selinux-enabled --insecure-registry 172.30.0.0/16'
+openshift_install_examples=true
+openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/openshift/openshift-passwd'}]
 openshift_release=3.9
+os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
 
 [masters]
 $IP_MASTER
