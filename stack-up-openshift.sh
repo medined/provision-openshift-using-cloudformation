@@ -149,7 +149,6 @@ ansible_ssh_user=centos
 ansible_sudo=true
 ansible_become=true
 deployment_type=origin
-openshift_cloudprovider_kind=aws
 openshift_disable_check=disk_availability,docker_storage,memory_availability
 openshift_docker_options='--selinux-enabled --insecure-registry 172.30.0.0/16'
 openshift_install_examples=true
