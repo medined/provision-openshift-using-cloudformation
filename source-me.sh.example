@@ -11,11 +11,16 @@
 # project uses shell commands and they are not properly escaped
 # so the dollar sign will break the process!
 
+##########
+# NOTE: I tried to use T3 instances but they use different volume names, like nvme0n1.
+# This caused the docker-storage-setup step in prepare.yml to fail because /dev/xvdb
+# was not available.
+
 Z34_AMI="ami-9887c6e7"
 Z34_AVAILABILITY_ZONE="us-east-1a"
 Z34_HTPASSWD_PASSWORD=ZipBlipGlipGlop345
 Z34_HTPASSWD_USERNAME=admin
-Z34_INSTANCE_TYPE="t3.medium"
+Z34_INSTANCE_TYPE="t2.medium"
 Z34_INVENTORY_FILE="inventory"
 Z34_KEYNAME="xxxyyy"
 Z34_PEM_FILE=/.../xxxyyy.pem
