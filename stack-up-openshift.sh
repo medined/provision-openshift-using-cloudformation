@@ -155,6 +155,7 @@ openshift_install_examples=true
 openshift_master_identity_providers=[{'name': 'htpasswd_auth', 'login': 'true', 'challenge': 'true', 'kind': 'HTPasswdPasswordIdentityProvider', 'filename': '/etc/openshift/openshift-passwd'}]
 openshift_release=3.9
 os_sdn_network_plugin_name='redhat/openshift-ovs-multitenant'
+osm_default_subdomain=${IP_MASTER}.xip.io
 
 [masters]
 $IP_MASTER
